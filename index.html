@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeM Price Comparison</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <main class="app">
+        <header class="header">
+            <p class="eyebrow">PRICE CHECKER</p>
+            <h1>GeM Price Comparison</h1>
+            <p class="subtitle">
+                GeM ke product price ko example marketplace prices ke saath compare karein.
+            </p>
+        </header>
+
+        <section class="search-section">
+            <label for="product-input">Product name</label>
+
+            <div class="search-row">
+                <input id="product-input" type="text" placeholder="Example: office chair" autocomplete="off" />
+                <button id="search-button">Search</button>
+            </div>
+
+            <p class="demo-note">
+                Demo data: yeh prices example hain, live marketplace prices nahi.
+            </p>
+        </section>
+
+        <section id="results" class="results" aria-live="polite">
+            <p class="empty-message">Product ka naam likh kar Search dabayein.</p>
+        </section>
+
+        <footer>GeM Price Comparison · Learning project</footer>
+    </main>
+
+    <script src="renderer.js"></script>
+</body>
+
+</html>
