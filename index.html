@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;" />
     <title>GeM Price Comparison</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
@@ -12,9 +14,9 @@
     <main class="app">
         <header class="header">
             <p class="eyebrow">PRICE CHECKER</p>
-            <h1>GeM Price Comparison</h1>
+            <h1>Marketplace Price Comparison</h1>
             <p class="subtitle">
-                GeM ke product price ko example marketplace prices ke saath compare karein.
+                Product search karein aur demo marketplace prices compare karein.
             </p>
         </header>
 
@@ -22,8 +24,14 @@
             <label for="product-input">Product name</label>
 
             <div class="search-row">
-                <input id="product-input" type="text" placeholder="Example: office chair" autocomplete="off" />
-                <button id="search-button">Search</button>
+                <div class="autocomplete">
+                    <input id="product-input" type="text" placeholder="Example: t shirt" autocomplete="off"
+                        role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" />
+                    <div id="suggestions" class="suggestions" role="listbox" aria-label="Matching products" hidden>
+                    </div>
+                </div>
+
+                <button id="search-button" type="button">Search</button>
             </div>
 
             <p class="demo-note">
@@ -32,7 +40,7 @@
         </section>
 
         <section id="results" class="results" aria-live="polite">
-            <p class="empty-message">Product ka naam likh kar Search dabayein.</p>
+            <p class="empty-message">Product ka naam likhna shuru karein.</p>
         </section>
 
         <footer>GeM Price Comparison · Learning project</footer>

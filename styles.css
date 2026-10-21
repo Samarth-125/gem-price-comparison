@@ -54,19 +54,82 @@ h1 {
 
 .search-row {
     display: flex;
+    align-items: flex-start;
     gap: 10px;
 }
 
-input {
+.autocomplete {
+    position: relative;
     flex: 1;
     min-width: 0;
+}
+
+input {
+    width: 100%;
     padding: 12px 14px;
     border: 1px solid #cfd6e4;
     border-radius: 8px;
     font-size: 15px;
 }
 
-button {
+input:focus {
+    border-color: #3157c8;
+    outline: 2px solid rgba(49, 87, 200, 0.15);
+}
+
+.suggestions {
+    position: absolute;
+    z-index: 5;
+    top: calc(100% + 5px);
+    right: 0;
+    left: 0;
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid #d9dfeb;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 10px 24px rgba(23, 32, 51, 0.12);
+}
+
+.suggestions[hidden] {
+    display: none;
+}
+
+.suggestion-option {
+    display: block;
+    width: 100%;
+    padding: 11px 13px;
+    border: 0;
+    border-bottom: 1px solid #edf0f5;
+    border-radius: 0;
+    background: white;
+    color: #172033;
+    text-align: left;
+    cursor: pointer;
+}
+
+.suggestion-option:last-child {
+    border-bottom: 0;
+}
+
+.suggestion-option:hover,
+.suggestion-option.active {
+    background: #f1f4fc;
+}
+
+.suggestion-name {
+    display: block;
+    font-weight: bold;
+}
+
+.suggestion-details {
+    display: block;
+    margin-top: 4px;
+    color: #667085;
+    font-size: 12px;
+}
+
+button#search-button {
     padding: 12px 20px;
     border: 0;
     border-radius: 8px;
@@ -77,7 +140,7 @@ button {
     font-weight: bold;
 }
 
-button:hover {
+button#search-button:hover {
     background: #2445a8;
 }
 
@@ -104,13 +167,13 @@ footer {
 .result-heading {
     margin: 0 0 6px;
     font-size: 20px;
-    text-transform: capitalize;
 }
 
 .result-note {
-    margin: 0 0 18px;
+    margin: 0 0 14px;
     color: #667085;
     font-size: 13px;
+    line-height: 1.5;
 }
 
 .price-list {
@@ -132,9 +195,19 @@ footer {
 }
 
 .comparison {
-    margin-top: 4px;
+    margin: 4px 0;
     color: #667085;
     font-size: 13px;
+}
+
+.price-card a {
+    color: #3157c8;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.price-card a:hover {
+    text-decoration: underline;
 }
 
 .price {
@@ -167,5 +240,9 @@ footer {
 
     .search-row {
         flex-direction: column;
+    }
+
+    button#search-button {
+        width: 100%;
     }
 }
