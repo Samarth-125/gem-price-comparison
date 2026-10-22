@@ -37,8 +37,10 @@ function formatPrice(product) {
   }).format(product.price);
 }
 
-function showMessage(message) {
-  results.textContent = message;
+function showMessage(message, isError = false) {
+  results.innerHTML = `
+    <p class="message ${isError ? "error" : ""}">${escapeHtml(message)}</p>
+  `;
 }
 
 function getUniqueProducts() {
@@ -132,7 +134,7 @@ function showSuggestions() {
     const details = document.createElement("span");
     details.className = "suggestion-details";
     details.textContent =
-      `${product.brand || "Brand unknown"} · ${product.model || "Model unknown"}`;
+      `${product.brand || "Brand not listed"} · ${product.model || "Model not listed"}`;
 
     option.append(name, details);
 
@@ -158,11 +160,18 @@ async function loadMarketplaceData() {
       throw new Error("Each JSON file must contain an array of products.");
     }
 
-    showMessage("Product ka naam likhna shuru karein.");
+    results.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">⌕</div>
+        <h2>Ready when you are</h2>
+        <p>Search for a product to see its marketplace prices.</p>
+      </div>
+    `;
   } catch (error) {
     console.error("Marketplace data load error:", error);
     showMessage(
-      "Data load nahi hua. Check karein ki data folder mein teen valid JSON files hain."
+      "Product data could not be loaded. Check the JSON files in the data folder.",
+      true
     );
   }
 }
@@ -185,7 +194,7 @@ function showProductResults(productId) {
     .filter(Boolean);
 
   if (listings.length === 0) {
-    showMessage("Is product ki marketplace listing nahi mili.");
+    showMessage("No marketplace listings were found for this product.");
     return;
   }
 
@@ -199,12 +208,16 @@ function showProductResults(productId) {
   );
 
   if (availableListings.length === 0) {
-    showMessage("Is product ki koi in-stock listing nahi mili.");
+    showMessage("This product has no in-stock marketplace listings.");
     return;
   }
 
   const lowestPrice = Math.min(
     ...availableListings.map((product) => product.price)
+  );
+
+  const lowestListing = availableListings.find(
+    (product) => product.price === lowestPrice
   );
 
   const cards = listings
@@ -216,7 +229,7 @@ function showProductResults(productId) {
 
       const priceText = isAvailable ? formatPrice(product) : "Out of stock";
 
-      let comparison = "Price available nahi hai";
+      let comparison = "Price unavailable";
 
       if (isAvailable && product.price === lowestPrice) {
         comparison = "Lowest listed price";
@@ -224,11 +237,11 @@ function showProductResults(productId) {
         comparison = `${formatPrice({
           price: product.price - lowestPrice,
           currency: product.currency
-        })} lowest price se zyada`;
+        })} above the lowest price`;
       }
 
       const link = product.productUrl
-        ? `<a href="${escapeHtml(product.productUrl)}" target="_blank" rel="noreferrer">Marketplace par dekhein</a>`
+        ? `<a href="${escapeHtml(product.productUrl)}" target="_blank" rel="noreferrer">View marketplace listing</a>`
         : "";
 
       const lowestClass =
@@ -248,20 +261,32 @@ function showProductResults(productId) {
     .join("");
 
   results.innerHTML = `
-    <h2 class="result-heading">${escapeHtml(mainProduct.name)}</h2>
-    <p class="result-note">
-      Brand: ${escapeHtml(mainProduct.brand || "—")} ·
-      Model: ${escapeHtml(mainProduct.model || "—")} ·
-      Category: ${escapeHtml(mainProduct.category || "—")}
-    </p>
-    <p class="result-note">Demo data — live prices nahi hain.</p>
+    <div class="result-header">
+      <div>
+        <h2 class="result-heading">${escapeHtml(mainProduct.name)}</h2>
+        <p class="result-details">
+          Brand: ${escapeHtml(mainProduct.brand || "—")} ·
+          Model: ${escapeHtml(mainProduct.model || "—")} ·
+          Category: ${escapeHtml(mainProduct.category || "—")}
+        </p>
+      </div>
+      <span class="result-label">DEMO PRICES</span>
+    </div>
+
+    <div class="lowest-summary">
+      <span class="lowest-summary-label">
+        Lowest price · ${escapeHtml(lowestListing.marketplace)}
+      </span>
+      <span class="lowest-summary-value">${formatPrice(lowestListing)}</span>
+    </div>
+
     <div class="price-list">${cards}</div>
   `;
 }
 
 function searchProducts() {
   if (!loadedMarketplaceData) {
-    showMessage("Product data abhi load ho raha hai. Thodi der baad try karein.");
+    showMessage("Product data is still loading. Please try again shortly.");
     return;
   }
 
@@ -274,7 +299,7 @@ function searchProducts() {
   const searchText = normalizeText(productInput.value);
 
   if (!searchText) {
-    showMessage("Pehle product ka naam likhein.");
+    showMessage("Enter a product name to search.");
     return;
   }
 
@@ -283,7 +308,7 @@ function searchProducts() {
   );
 
   if (!matchingProduct) {
-    showMessage(`"${productInput.value.trim()}" ke liye product nahi mila.`);
+    showMessage(`No product found for “${productInput.value.trim()}”.`);
     hideSuggestions();
     return;
   }
