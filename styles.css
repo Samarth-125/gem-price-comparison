@@ -445,3 +445,20 @@ footer {
         font-size: 14px;
     }
 }
+
+#category-filter {
+    width: 100%;
+    height: 44px;
+    margin-bottom: 18px;
+    padding: 0 12px;
+    border: 1px solid #cfd6e4;
+    border-radius: 8px;
+    background: white;
+    color: #172033;
+    font: inherit;
+}
+
+#category-filter:focus {
+    border-color: #3157c8;
+    outline: 2px solid rgba(49, 87, 200, 0.15);
+}

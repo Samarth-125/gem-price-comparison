@@ -2,6 +2,7 @@ const productInput = document.getElementById("product-input");
 const searchButton = document.getElementById("search-button");
 const suggestions = document.getElementById("suggestions");
 const results = document.getElementById("results");
+const categoryFilter = document.getElementById("category-filter");
 
 let loadedMarketplaceData = null;
 let matchingSuggestions = [];
@@ -282,6 +283,25 @@ function showProductResults(productId) {
 
     <div class="price-list">${cards}</div>
   `;
+}
+
+function loadCategories() {
+  const allProducts = [
+    ...loadedMarketplaceData.amazon,
+    ...loadedMarketplaceData.flipkart,
+    ...loadedMarketplaceData.jiomart
+  ];
+
+  const categories = [
+    ...new Set(allProducts.map((product) => product.category).filter(Boolean))
+  ].sort();
+
+  categories.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.append(option);
+  });
 }
 
 function searchProducts() {
