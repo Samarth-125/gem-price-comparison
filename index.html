@@ -14,7 +14,6 @@
     <main class="app">
         <header class="header">
             <div class="brand-mark" aria-hidden="true">₹</div>
-
             <div>
                 <p class="eyebrow">PRICE CHECKER</p>
                 <h1>Marketplace Price Comparison</h1>
@@ -24,10 +23,23 @@
             </div>
         </header>
 
-        <label for="category-filter">Category</label>
-        <select id="category-filter">
-            <option value="">All categories</option>
-        </select>
+        <section class="filters" aria-label="Product filters">
+            <div>
+                <label for="category-filter">Category</label>
+                <select id="category-filter">
+                    <option value="">All categories</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="sort-filter">Sort prices</label>
+                <select id="sort-filter">
+                    <option value="default">Default order</option>
+                    <option value="low-to-high">Price: low to high</option>
+                    <option value="high-to-low">Price: high to low</option>
+                </select>
+            </div>
+        </section>
 
         <section class="search-section" aria-label="Product search">
             <div class="section-heading">
@@ -65,7 +77,7 @@
             </div>
         </section>
 
-        <footer>GeM Price Comparison · Learning project</footer>
+        <footer>Marketplace Price Comparison · Learning project</footer>
     </main>
 
     <script src="renderer.js"></script>

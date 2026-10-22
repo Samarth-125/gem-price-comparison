@@ -3,6 +3,7 @@ const searchButton = document.getElementById("search-button");
 const suggestions = document.getElementById("suggestions");
 const results = document.getElementById("results");
 const categoryFilter = document.getElementById("category-filter");
+const sortFilter = document.getElementById("sort-filter");
 
 let loadedMarketplaceData = null;
 let matchingSuggestions = [];
@@ -40,7 +41,9 @@ function formatPrice(product) {
 
 function showMessage(message, isError = false) {
   results.innerHTML = `
-    <p class="message ${isError ? "error" : ""}">${escapeHtml(message)}</p>
+    <p class="message ${isError ? "error" : ""}">
+      ${escapeHtml(message)}
+    </p>
   `;
 }
 
@@ -92,7 +95,6 @@ function updateActiveSuggestion() {
 
   options.forEach((option, index) => {
     const isActive = index === activeSuggestionIndex;
-
     option.classList.toggle("active", isActive);
     option.setAttribute("aria-selected", String(isActive));
   });
@@ -205,7 +207,9 @@ async function loadMarketplaceData() {
     );
 
     if (!hasValidData) {
-      throw new Error("Amazon, Flipkart, and JioMart data must each be a JSON array.");
+      throw new Error(
+        "Amazon, Flipkart, and JioMart data must each be a JSON array."
+      );
     }
 
     loadCategories();
@@ -220,10 +224,42 @@ async function loadMarketplaceData() {
   } catch (error) {
     console.error("Marketplace data load error:", error);
     showMessage(
-      "Product data could not be loaded. Check the three JSON files in the data folder and the preload.js setup.",
+      "Product data could not be loaded. Check the three JSON files in the data folder and preload.js.",
       true
     );
   }
+}
+
+function sortListings(listings) {
+  const sortOrder = sortFilter.value;
+
+  if (sortOrder === "default") {
+    return listings;
+  }
+
+  return [...listings].sort((a, b) => {
+    const aAvailable =
+      a.inStock === true &&
+      typeof a.price === "number" &&
+      Number.isFinite(a.price);
+
+    const bAvailable =
+      b.inStock === true &&
+      typeof b.price === "number" &&
+      Number.isFinite(b.price);
+
+    if (aAvailable !== bAvailable) {
+      return aAvailable ? -1 : 1;
+    }
+
+    if (!aAvailable) {
+      return 0;
+    }
+
+    return sortOrder === "low-to-high"
+      ? a.price - b.price
+      : b.price - a.price;
+  });
 }
 
 function showProductResults(productId) {
@@ -238,7 +274,7 @@ function showProductResults(productId) {
     { name: "JioMart", products: loadedMarketplaceData.jiomart }
   ];
 
-  const listings = marketplaces
+  let listings = marketplaces
     .map((marketplace) => {
       const product = marketplace.products.find(
         (item) => item.productId === productId
@@ -274,6 +310,7 @@ function showProductResults(productId) {
   );
 
   const mainProduct = listings[0];
+  listings = sortListings(listings);
 
   const cards = listings
     .map((product) => {
@@ -381,7 +418,8 @@ function searchProducts() {
     return;
   }
 
-  showProductResults(matchingProduct.productId);
+  selectedProductId = matchingProduct.productId;
+  showProductResults(selectedProductId);
   hideSuggestions();
 }
 
@@ -434,6 +472,12 @@ categoryFilter.addEventListener("change", () => {
     showSuggestions();
   } else {
     hideSuggestions();
+  }
+});
+
+sortFilter.addEventListener("change", () => {
+  if (selectedProductId) {
+    showProductResults(selectedProductId);
   }
 });
 
