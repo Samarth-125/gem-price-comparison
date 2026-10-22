@@ -10,7 +10,7 @@ let activeSuggestionIndex = -1;
 let selectedProductId = null;
 
 function normalizeText(text) {
-  return text
+  return String(text ?? "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
@@ -45,6 +45,10 @@ function showMessage(message, isError = false) {
 }
 
 function getUniqueProducts() {
+  if (!loadedMarketplaceData) {
+    return [];
+  }
+
   const allProducts = [
     ...loadedMarketplaceData.amazon,
     ...loadedMarketplaceData.flipkart,
@@ -60,6 +64,14 @@ function getUniqueProducts() {
   });
 
   return [...uniqueProducts.values()];
+}
+
+function getFilteredProducts() {
+  const selectedCategory = categoryFilter.value;
+
+  return getUniqueProducts().filter((product) => {
+    return !selectedCategory || product.category === selectedCategory;
+  });
 }
 
 function hideSuggestions() {
@@ -97,14 +109,19 @@ function showSuggestions() {
   }
 
   const searchText = normalizeText(productInput.value);
+  const selectedCategory = categoryFilter.value;
 
-  if (!searchText) {
+  if (!searchText && !selectedCategory) {
     hideSuggestions();
     return;
   }
 
-  matchingSuggestions = getUniqueProducts()
+  matchingSuggestions = getFilteredProducts()
     .filter((product) => {
+      if (!searchText) {
+        return true;
+      }
+
       const searchableText = normalizeText(
         `${product.name} ${product.brand || ""} ${product.model || ""}`
       );
@@ -150,16 +167,48 @@ function showSuggestions() {
   productInput.setAttribute("aria-expanded", "true");
 }
 
+function loadCategories() {
+  const categories = [
+    ...new Set(
+      getUniqueProducts()
+        .map((product) => product.category)
+        .filter(Boolean)
+    )
+  ].sort();
+
+  categoryFilter.replaceChildren();
+
+  const allOption = document.createElement("option");
+  allOption.value = "";
+  allOption.textContent = "All categories";
+  categoryFilter.append(allOption);
+
+  categories.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.append(option);
+  });
+}
+
 async function loadMarketplaceData() {
   try {
+    if (!window.marketplaceData?.getAll) {
+      throw new Error("marketplaceData.getAll() is not available in preload.js.");
+    }
+
     loadedMarketplaceData = await window.marketplaceData.getAll();
 
-    const files = Object.values(loadedMarketplaceData);
-    const allFilesAreArrays = files.every(Array.isArray);
+    const requiredMarketplaces = ["amazon", "flipkart", "jiomart"];
+    const hasValidData = requiredMarketplaces.every((marketplace) =>
+      Array.isArray(loadedMarketplaceData[marketplace])
+    );
 
-    if (!allFilesAreArrays) {
-      throw new Error("Each JSON file must contain an array of products.");
+    if (!hasValidData) {
+      throw new Error("Amazon, Flipkart, and JioMart data must each be a JSON array.");
     }
+
+    loadCategories();
 
     results.innerHTML = `
       <div class="empty-state">
@@ -171,13 +220,18 @@ async function loadMarketplaceData() {
   } catch (error) {
     console.error("Marketplace data load error:", error);
     showMessage(
-      "Product data could not be loaded. Check the JSON files in the data folder.",
+      "Product data could not be loaded. Check the three JSON files in the data folder and the preload.js setup.",
       true
     );
   }
 }
 
 function showProductResults(productId) {
+  if (!loadedMarketplaceData) {
+    showMessage("Product data is still loading. Please try again shortly.");
+    return;
+  }
+
   const marketplaces = [
     { name: "Amazon", products: loadedMarketplaceData.amazon },
     { name: "Flipkart", products: loadedMarketplaceData.flipkart },
@@ -199,8 +253,6 @@ function showProductResults(productId) {
     return;
   }
 
-  const mainProduct = listings[0];
-
   const availableListings = listings.filter(
     (product) =>
       product.inStock === true &&
@@ -221,6 +273,8 @@ function showProductResults(productId) {
     (product) => product.price === lowestPrice
   );
 
+  const mainProduct = listings[0];
+
   const cards = listings
     .map((product) => {
       const isAvailable =
@@ -235,15 +289,26 @@ function showProductResults(productId) {
       if (isAvailable && product.price === lowestPrice) {
         comparison = "Lowest listed price";
       } else if (isAvailable) {
+        const difference = product.price - lowestPrice;
         comparison = `${formatPrice({
-          price: product.price - lowestPrice,
-          currency: product.currency
+          price: difference,
+          currency: product.currency || "INR"
         })} above the lowest price`;
       }
 
-      const link = product.productUrl
-        ? `<a href="${escapeHtml(product.productUrl)}" target="_blank" rel="noreferrer">View marketplace listing</a>`
-        : "";
+      let link = "";
+
+      if (product.productUrl) {
+        try {
+          const url = new URL(product.productUrl);
+
+          if (url.protocol === "https:" || url.protocol === "http:") {
+            link = `<a href="${escapeHtml(url.href)}" target="_blank" rel="noreferrer">View marketplace listing</a>`;
+          }
+        } catch (error) {
+          console.warn("Invalid product URL:", product.productUrl);
+        }
+      }
 
       const lowestClass =
         isAvailable && product.price === lowestPrice ? "lowest" : "";
@@ -252,10 +317,10 @@ function showProductResults(productId) {
         <article class="price-card ${lowestClass}">
           <div>
             <div class="marketplace">${escapeHtml(product.marketplace)}</div>
-            <div class="comparison">${comparison}</div>
+            <div class="comparison">${escapeHtml(comparison)}</div>
             ${link}
           </div>
-          <div class="price">${priceText}</div>
+          <div class="price">${escapeHtml(priceText)}</div>
         </article>
       `;
     })
@@ -278,30 +343,13 @@ function showProductResults(productId) {
       <span class="lowest-summary-label">
         Lowest price · ${escapeHtml(lowestListing.marketplace)}
       </span>
-      <span class="lowest-summary-value">${formatPrice(lowestListing)}</span>
+      <span class="lowest-summary-value">
+        ${escapeHtml(formatPrice(lowestListing))}
+      </span>
     </div>
 
     <div class="price-list">${cards}</div>
   `;
-}
-
-function loadCategories() {
-  const allProducts = [
-    ...loadedMarketplaceData.amazon,
-    ...loadedMarketplaceData.flipkart,
-    ...loadedMarketplaceData.jiomart
-  ];
-
-  const categories = [
-    ...new Set(allProducts.map((product) => product.category).filter(Boolean))
-  ].sort();
-
-  categories.forEach((category) => {
-    const option = document.createElement("option");
-    option.value = category;
-    option.textContent = category;
-    categoryFilter.append(option);
-  });
 }
 
 function searchProducts() {
@@ -323,12 +371,12 @@ function searchProducts() {
     return;
   }
 
-  const matchingProduct = getUniqueProducts().find((product) =>
+  const matchingProduct = getFilteredProducts().find((product) =>
     normalizeText(product.name).includes(searchText)
   );
 
   if (!matchingProduct) {
-    showMessage(`No product found for “${productInput.value.trim()}”.`);
+    showMessage(`No product found for "${productInput.value.trim()}".`);
     hideSuggestions();
     return;
   }
@@ -378,6 +426,16 @@ productInput.addEventListener("keydown", (event) => {
 });
 
 searchButton.addEventListener("click", searchProducts);
+
+categoryFilter.addEventListener("change", () => {
+  selectedProductId = null;
+
+  if (productInput.value.trim() || categoryFilter.value) {
+    showSuggestions();
+  } else {
+    hideSuggestions();
+  }
+});
 
 document.addEventListener("click", (event) => {
   if (
