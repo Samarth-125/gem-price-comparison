@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;" />
+
     <title>Marketplace Price Comparison</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
@@ -14,6 +16,7 @@
     <main class="app">
         <header class="header">
             <div class="brand-mark" aria-hidden="true">₹</div>
+
             <div>
                 <p class="eyebrow">PRICE CHECKER</p>
                 <h1>Marketplace Price Comparison</h1>
@@ -24,14 +27,14 @@
         </header>
 
         <section class="filters" aria-label="Product filters">
-            <div>
+            <div class="filter-control">
                 <label for="category-filter">Category</label>
                 <select id="category-filter">
                     <option value="">All categories</option>
                 </select>
             </div>
 
-            <div>
+            <div class="filter-control">
                 <label for="sort-filter">Sort prices</label>
                 <select id="sort-filter">
                     <option value="default">Default order</option>
@@ -47,6 +50,7 @@
                     <h2>Search products</h2>
                     <p>Start typing a product name to see suggestions.</p>
                 </div>
+
                 <span class="demo-badge">DEMO DATA</span>
             </div>
 
@@ -55,8 +59,10 @@
             <div class="search-row">
                 <div class="autocomplete">
                     <span class="search-icon" aria-hidden="true">⌕</span>
+
                     <input id="product-input" type="text" placeholder="Try “t shirt”" autocomplete="off" role="combobox"
                         aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" />
+
                     <div id="suggestions" class="suggestions" role="listbox" aria-label="Matching products" hidden>
                     </div>
                 </div>
@@ -80,7 +86,20 @@
         <footer>Marketplace Price Comparison · Learning project</footer>
     </main>
 
-    <script src="renderer.js"></script>
+    <!-- Load helpers and components before the renderer starts. -->
+    <script src="src/utils/text.js"></script>
+    <script src="src/utils/price.js"></script>
+
+    <script src="src/components/empty-state.js"></script>
+    <script src="src/components/autocomplete.js"></script>
+    <script src="src/components/price-card.js"></script>
+
+    <script src="src/features/category-filter.js"></script>
+    <script src="src/features/price-sort.js"></script>
+    <script src="src/features/product-search.js"></script>
+    <script src="src/features/product-comparison.js"></script>
+
+    <script src="src/renderer.js"></script>
 </body>
 
 </html>
