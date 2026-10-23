@@ -462,3 +462,20 @@ footer {
     border-color: #3157c8;
     outline: 2px solid rgba(49, 87, 200, 0.15);
 }
+
+.clear-search-button {
+    margin-top: 8px;
+    padding: 9px 13px;
+    border: 1px solid #cfd6e2;
+    border-radius: 8px;
+    background: white;
+    color: #3157c8;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.clear-search-button:hover {
+    background: #f3f6ff;
+}

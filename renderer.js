@@ -17,6 +17,47 @@ function normalizeText(text) {
     .trim();
 }
 
+function showReadyState() {
+  results.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon" aria-hidden="true">⌕</div>
+      <h2>Ready when you are</h2>
+      <p>Search for a product to see its marketplace prices.</p>
+    </div>
+  `;
+}
+
+function showNoResults(searchText) {
+  const categoryMessage = categoryFilter.value
+    ? ` in ${escapeHtml(categoryFilter.value)}`
+    : "";
+
+  results.innerHTML = `
+    <div class="empty-state no-results">
+      <div class="empty-icon" aria-hidden="true">?</div>
+      <h2>No products found</h2>
+      <p>
+        No products match “${escapeHtml(searchText)}”${categoryMessage}.
+        Try another search or category.
+      </p>
+      <button id="clear-search-button" class="clear-search-button" type="button">
+        Clear search and filters
+      </button>
+    </div>
+  `;
+
+  document
+    .getElementById("clear-search-button")
+    .addEventListener("click", () => {
+      productInput.value = "";
+      categoryFilter.value = "";
+      selectedProductId = null;
+      hideSuggestions();
+      showReadyState();
+      productInput.focus();
+    });
+}
+
 function escapeHtml(text) {
   return String(text ?? "").replace(/[&<>"']/g, (character) => {
     const replacements = {
@@ -413,7 +454,7 @@ function searchProducts() {
   );
 
   if (!matchingProduct) {
-    showMessage(`No product found for "${productInput.value.trim()}".`);
+    showNoResults(productInput.value.trim());
     hideSuggestions();
     return;
   }
