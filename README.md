@@ -38,3 +38,9 @@ Gem/
 ├── preload.js              # Safe bridge between Electron and the page
 ├── styles.css              # App styling and responsive layout
 └── package.json            # Project settings and start command
+
+## Download
+
+Download the macOS Apple Silicon installer from the [latest release](https://github.com/Samarth-125/gem-price-comparison/releases/latest).
+
+This build is for Apple Silicon Macs (arm64). The app is not signed or notarized, so macOS may show a security warning when opening it.
