@@ -1,6 +1,5 @@
 // Electron APIs: app/window lifecycle, renderer communication, and external links.
 const { app, BrowserWindow, ipcMain, shell } = require("electron");
-
 // Node.js utilities for reading files and building safe file paths.
 const fs = require("fs/promises");
 const path = require("path");
@@ -9,7 +8,6 @@ const path = require("path");
 async function readJsonFile(fileName) {
   const filePath = path.join(__dirname, "data", fileName);
   const fileContent = await fs.readFile(filePath, "utf8");
-
   return JSON.parse(fileContent);
 }
 
@@ -20,7 +18,6 @@ ipcMain.handle("get-marketplace-data", async () => {
     readJsonFile("flipkart.json"),
     readJsonFile("jiomart.json")
   ]);
-
   return { amazon, flipkart, jiomart };
 });
 
@@ -43,7 +40,6 @@ function createWindow() {
     if (url.startsWith("https://") || url.startsWith("http://")) {
       shell.openExternal(url);
     }
-
     return { action: "deny" };
   });
 
@@ -54,7 +50,6 @@ function createWindow() {
 // Starts the first window after Electron has finished initializing.
 app.whenReady().then(() => {
   createWindow();
-
   // On macOS, clicking the app icon reopens a window if all windows were closed.
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {

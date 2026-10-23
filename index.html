@@ -1,132 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Basic page settings and security rules for the Electron renderer. -->
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <meta
-    http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;"
-  />
-
-  <!-- Browser window title and stylesheet. -->
-  <title>Marketplace Price Comparison</title>
-  <link rel="stylesheet" href="styles.css" />
+    <!-- Basic page settings and security rules for the Electron renderer. -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;"
+    />
+    <!-- Browser window title and stylesheet. -->
+    <title>Marketplace Price Comparison</title>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <main class="app">
-    <!-- App title and short description. -->
-    <header class="header">
-      <div class="brand-mark" aria-hidden="true">₹</div>
-
-      <div>
-        <p class="eyebrow">PRICE CHECKER</p>
-        <h1>Marketplace Price Comparison</h1>
-        <p class="subtitle">
-          Find a product and compare its prices across marketplaces.
-        </p>
-      </div>
+    <main class="app">
+        <!-- App title and short description. -->
+        <header class="header">
+        <div class="brand-mark" aria-hidden="true">₹</div>
+        <div>
+            <p class="eyebrow">PRICE CHECKER</p>
+            <h1>Marketplace Price Comparison</h1>
+            <p class="subtitle">
+            Find a product and compare its prices across marketplaces.
+            </p>
+        </div>
     </header>
 
     <!-- Product category and marketplace price sorting controls. -->
     <section class="filters" aria-label="Product filters">
-      <div class="filter-control">
-        <label for="category-filter">Category</label>
-        <select id="category-filter">
-          <option value="">All categories</option>
-        </select>
-      </div>
-
-      <div class="filter-control">
-        <label for="sort-filter">Sort prices</label>
-        <select id="sort-filter">
-          <option value="default">Default order</option>
-          <option value="low-to-high">Price: low to high</option>
-          <option value="high-to-low">Price: high to low</option>
-        </select>
-      </div>
+        <div class="filter-control">
+            <label for="category-filter">Category</label>
+            <select id="category-filter">
+            <option value="">All categories</option>
+            </select>
+        </div>
+        <div class="filter-control">
+            <label for="sort-filter">Sort prices</label>
+            <select id="sort-filter">
+            <option value="default">Default order</option>
+            <option value="low-to-high">Price: low to high</option>
+            <option value="high-to-low">Price: high to low</option>
+            </select>
+        </div>
     </section>
 
-    <!-- Search input, autocomplete list, and demo data notice. -->
-    <section class="search-section" aria-label="Product search">
-      <div class="section-heading">
-        <div>
-          <h2>Search products</h2>
-          <p>Start typing a product name to see suggestions.</p>
+        <!-- Search input, autocomplete list, and demo data notice. -->
+        <section class="search-section" aria-label="Product search">
+        <div class="section-heading">
+            <div>
+            <h2>Search products</h2>
+            <p>Start typing a product name to see suggestions.</p>
+            </div>
+
+            <span class="demo-badge">DEMO DATA</span>
         </div>
+        <label for="product-input">Product name</label>
+        <div class="search-row">
+            <div class="autocomplete">
+            <span class="search-icon" aria-hidden="true">⌕</span>
 
-        <span class="demo-badge">DEMO DATA</span>
-      </div>
-
-      <label for="product-input">Product name</label>
-
-      <div class="search-row">
-        <div class="autocomplete">
-          <span class="search-icon" aria-hidden="true">⌕</span>
-
-          <input
-            id="product-input"
-            type="text"
-            placeholder="Try “t shirt”"
-            autocomplete="off"
-            role="combobox"
-            aria-autocomplete="list"
-            aria-expanded="false"
-            aria-controls="suggestions"
-          />
-
-          <!-- JavaScript adds matching product options here. -->
-          <div
-            id="suggestions"
-            class="suggestions"
-            role="listbox"
-            aria-label="Matching products"
-            hidden
-          ></div>
+            <input
+                id="product-input"
+                type="text"
+                placeholder="Try “t shirt”"
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="suggestions"
+            />
+            <!-- JavaScript adds matching product options here. -->
+            <div
+                id="suggestions"
+                class="suggestions"
+                role="listbox"
+                aria-label="Matching products"
+                hidden
+            ></div>
         </div>
 
         <button id="search-button" type="button">Search</button>
-      </div>
+        </div>
 
-      <p class="data-note">
-        Prices shown are examples from local JSON files, not live marketplace prices.
-      </p>
-    </section>
+        <p class="data-note">
+            Prices shown are examples from local JSON files, not live marketplace prices.
+        </p>
+        </section>
 
-    <!-- JavaScript replaces this content with results or a message. -->
-    <section
-      id="results"
-      class="results"
-      aria-live="polite"
-      aria-label="Price comparison results"
-    >
-      <div class="empty-state">
-        <div class="empty-icon" aria-hidden="true">⌕</div>
-        <h2>Ready when you are</h2>
-        <p>Search for a product to see its marketplace prices.</p>
-      </div>
+        <!-- JavaScript replaces this content with results or a message. -->
+        <section
+        id="results"
+        class="results"
+        aria-live="polite"
+        aria-label="Price comparison results">
+        <div class="empty-state">
+            <div class="empty-icon" aria-hidden="true">⌕</div>
+            <h2>Ready when you are</h2>
+            <p>Search for a product to see its marketplace prices.</p>
+        </div>
     </section>
 
     <!-- Small footer at the bottom of the app. -->
     <footer>Marketplace Price Comparison · Learning project</footer>
-  </main>
-
-  <!-- Load helper files and components before the app's renderer entry point. -->
-  <script src="src/utils/text.js"></script>
-  <script src="src/utils/price.js"></script>
-
-  <script src="src/components/empty-state.js"></script>
-  <script src="src/components/autocomplete.js"></script>
-  <script src="src/components/price-card.js"></script>
-
-  <script src="src/features/category-filter.js"></script>
-  <script src="src/features/price-sort.js"></script>
-  <script src="src/features/product-search.js"></script>
-  <script src="src/features/product-comparison.js"></script>
-
-  <!-- Starts the app after all its dependencies have loaded. -->
-  <script src="src/renderer.js"></script>
+    </main>
+    <!-- Load helper files and components before the app's renderer entry point. -->
+    <script src="src/utils/text.js"></script>
+    <script src="src/utils/price.js"></script>
+    <script src="src/components/empty-state.js"></script>
+    <script src="src/components/autocomplete.js"></script>
+    <script src="src/components/price-card.js"></script>
+    <script src="src/features/category-filter.js"></script>
+    <script src="src/features/price-sort.js"></script>
+    <script src="src/features/product-search.js"></script>
+    <script src="src/features/product-comparison.js"></script>
+    <!-- Starts the app after all its dependencies have loaded. -->
+    <script src="src/renderer.js"></script>
 </body>
 </html>
