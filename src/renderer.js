@@ -10,13 +10,13 @@ const emptyState = window.GemApp.components.emptyState;
 const categoryTools = window.GemApp.features.categoryFilter;
 const productTools = window.GemApp.features;
 
-let marketplaceData = null;
+let marketplaceCatalog = null;
 let uniqueProducts = [];
 let productSearch = null;
 
 function showProductResults(productId) {
   results.innerHTML = productTools.renderProductComparison(
-    marketplaceData,
+    marketplaceCatalog,
     productId,
     sortFilter.value
   );
@@ -28,17 +28,17 @@ async function startApp() {
       throw new Error("The marketplace data bridge is missing from preload.js.");
     }
 
-    marketplaceData = await window.marketplaceData.getAll();
+    marketplaceCatalog = await window.marketplaceData.getAll();
 
     const validData = ["amazon", "flipkart", "jiomart"].every((name) =>
-      Array.isArray(marketplaceData[name])
+      Array.isArray(marketplaceCatalog[name])
     );
 
     if (!validData) {
       throw new Error("Each marketplace JSON file must contain a product array.");
     }
 
-    uniqueProducts = categoryTools.getUniqueProducts(marketplaceData);
+    uniqueProducts = categoryTools.getUniqueProducts(marketplaceCatalog);
     categoryTools.populate(categoryFilter, uniqueProducts);
 
     productSearch = productTools.initProductSearch({
