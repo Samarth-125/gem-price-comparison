@@ -2,18 +2,21 @@
 <html lang="en">
 
 <head>
+    <!-- Basic page settings and security rules for the Electron renderer. -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;" />
 
+    <!-- Browser window title and stylesheet. -->
     <title>Marketplace Price Comparison</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
     <main class="app">
+        <!-- App title and short description. -->
         <header class="header">
             <div class="brand-mark" aria-hidden="true">₹</div>
 
@@ -26,6 +29,7 @@
             </div>
         </header>
 
+        <!-- Product category and marketplace price sorting controls. -->
         <section class="filters" aria-label="Product filters">
             <div class="filter-control">
                 <label for="category-filter">Category</label>
@@ -44,6 +48,7 @@
             </div>
         </section>
 
+        <!-- Search input, autocomplete list, and demo data notice. -->
         <section class="search-section" aria-label="Product search">
             <div class="section-heading">
                 <div>
@@ -63,6 +68,7 @@
                     <input id="product-input" type="text" placeholder="Try “t shirt”" autocomplete="off" role="combobox"
                         aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" />
 
+                    <!-- JavaScript adds matching product options here. -->
                     <div id="suggestions" class="suggestions" role="listbox" aria-label="Matching products" hidden>
                     </div>
                 </div>
@@ -75,6 +81,7 @@
             </p>
         </section>
 
+        <!-- JavaScript replaces this content with results or a message. -->
         <section id="results" class="results" aria-live="polite" aria-label="Price comparison results">
             <div class="empty-state">
                 <div class="empty-icon" aria-hidden="true">⌕</div>
@@ -83,10 +90,11 @@
             </div>
         </section>
 
+        <!-- Small footer at the bottom of the app. -->
         <footer>Marketplace Price Comparison · Learning project</footer>
     </main>
 
-    <!-- Load helpers and components before the renderer starts. -->
+    <!-- Load helper files and components before the app's renderer entry point. -->
     <script src="src/utils/text.js"></script>
     <script src="src/utils/price.js"></script>
 
@@ -99,6 +107,7 @@
     <script src="src/features/product-search.js"></script>
     <script src="src/features/product-comparison.js"></script>
 
+    <!-- Starts the app after all its dependencies have loaded. -->
     <script src="src/renderer.js"></script>
 </body>
 
